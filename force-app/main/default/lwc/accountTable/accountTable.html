@@ -1,0 +1,93 @@
+<template>
+     <!-- Lightning card to wrap the component -->
+    <lightning-card title="Accounts">   
+        <div class="slds-p-around_medium">
+            <!-- Search input field for filtering accounts -->
+            <lightning-input type="search" label="Search Accounts" value={searchKey} onchange={handleSearch}></lightning-input>
+            <!-- Button to open modal for creating a new account -->
+            <lightning-button label="Create Account" onclick={handleOpenModal} class="slds-m-left_small"></lightning-button>
+        </div>
+        <!-- Data table to display accounts if accounts data is available -->
+        <template if:true={accounts}>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Name">Name</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Type">Type</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Owner">Owner</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Created Date">Created Date</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through accounts and display each account in a row -->
+                    <template for:each={accounts} for:item="account">
+                        <tr key={account.Id}>
+                            <td data-label="Name">
+                                <div class="slds-truncate" title={account.Name}>{account.Name}</div>
+                            </td>
+                            <td data-label="Type">
+                                <div class="slds-truncate" title={account.Type}>{account.Type}</div>
+                            </td>
+                            <td data-label="Owner">
+                                <div class="slds-truncate" title={account.Owner.Name}>{account.Owner.Name}</div>
+                            </td>
+                            <td data-label="Created Date">
+                                <lightning-formatted-date-time value={account.CreatedDate} year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                        minute="2-digit" time-zone="UTC" time-zone-name="short" hour12={ampm}></lightning-formatted-date-time>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </template>
+        <!-- Display loading spinner while data is being fetched -->
+        <template if:true={isLoading}>
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </template>
+        <!-- Display error message if there is an error fetching data -->
+        <template if:true={error}>
+            <p class="slds-text-color_error">{error}</p>
+        </template>
+    </lightning-card>
+    <!-- Modal window for creating a new account -->
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleCloseModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium">Create Account</h2>
+                </header>
+                <!-- Modal body with input fields for account creation -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-input label="Name" value={accountName} onchange={handleNameChange}></lightning-input>
+                    <lightning-combobox label="Type" value={accountType} placeholder="Select Account Type" options={accountTypeOptions} onchange={handleTypeChange}></lightning-combobox>
+                </div>
+                <!-- Modal footer with action buttons -->
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={handleCloseModal}></lightning-button>
+                    <lightning-button variant="brand" label="Save" onclick={handleSave}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <!-- Modal backdrop -->
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
